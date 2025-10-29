@@ -13,7 +13,7 @@ public class AuthService extends BaseService {
     private OutletDao outletDao;
     private static User currentUser;
 
-    // Validation Patterns
+    
     private static final Pattern USERNAME_PATTERN = Pattern.compile("^[a-zA-Z0-9_]+$");
     private static final Pattern PASSWORD_PATTERN = Pattern.compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+$");
     private static final Pattern PHONE_PATTERN = Pattern.compile("^[0-9]+$");
@@ -25,16 +25,16 @@ public class AuthService extends BaseService {
         this.outletDao = new OutletDao();
     }
 
-    // === LOGIN ===
+   
     public boolean login(String emailOrUsername, String password, JFrame parentFrame) {
-        // Validasi input menggunakan BaseService
+        
         if (!validateRequired(emailOrUsername, "Email/username", parentFrame) ||
                 !validateRequired(password, "Password", parentFrame)) {
             return false;
         }
 
         try {
-            // Cari user by email atau username
+           
             User user;
             if (isEmail(emailOrUsername)) {
                 user = userDao.getUserByUsername(emailOrUsername);
@@ -50,16 +50,16 @@ public class AuthService extends BaseService {
                 return false;
             }
 
-            // Verifikasi password
+            
             if (!user.getPassword().equals(password)) {
                 showError(parentFrame, "Email/username atau password salah");
                 return false;
             }
 
-            // Set current user
+            
             currentUser = user;
 
-            // Log aktivitas menggunakan BaseService
+            
             logActivity("Login", "User login ke sistem: " + user.getUsername());
 
             showSuccess(parentFrame, "Login berhasil! Selamat datang " + user.getName());
@@ -71,32 +71,32 @@ public class AuthService extends BaseService {
         }
     }
 
-    // === REGISTER ===
+    
     public boolean register(String name, String username, String email, String password,
                             String confirmPassword, String phone, String address,
                             String role, JFrame parentFrame) {
 
-        // Validasi input
+        
         if (!validateRegistration(name, username, email, password, confirmPassword, phone, address, role, parentFrame)) {
             return false;
         }
 
         try {
-            // Cek apakah username sudah ada
+            
             User existingUsername = userDao.getUserByUsername(username);
             if (existingUsername != null) {
                 showError(parentFrame, "Username sudah terdaftar");
                 return false;
             }
 
-            // Cek apakah email sudah ada
+            
             User existingEmail = userDao.getUserByUsername(email);
             if (existingEmail != null) {
                 showError(parentFrame, "Email sudah terdaftar");
                 return false;
             }
 
-            // Buat user baru
+            
             User newUser = new User();
             newUser.setName(name.trim());
             newUser.setUsername(username.trim());
@@ -108,15 +108,15 @@ public class AuthService extends BaseService {
             newUser.setCreatedAt(new Date());
             newUser.setUpdatedAt(new Date());
 
-            // Set outlet default
+            
             if (role.equals("admin") || role.equals("owner") || role.equals("kasir")) {
                 newUser.setIdOutlet(1);
             }
 
-            // Simpan user
+           
             boolean success = userDao.insertUser(newUser);
             if (success) {
-                // Log aktivitas menggunakan BaseService
+                
                 logCreate("user baru", "Username: " + newUser.getUsername());
 
                 showSuccess(parentFrame, "Registrasi berhasil! Silakan login.");
@@ -132,7 +132,7 @@ public class AuthService extends BaseService {
         }
     }
 
-    // === VALIDATION METHODS ===
+    
     private boolean validateRegistration(String name, String username, String email, String password,
                                          String confirmPassword, String phone, String address,
                                          String role, JFrame parentFrame) {
